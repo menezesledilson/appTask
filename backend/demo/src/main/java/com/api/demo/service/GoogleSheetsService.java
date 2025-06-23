@@ -23,18 +23,20 @@ import java.util.List;
         private static final String SPREADSHEET_ID = "1yaEs2P6H4Qik0wiEjF-M_v5EAnbrG7qe6wjsiuRBcfQ"; // <- coloque aqui
         private static final String RANGE = "A:C";
 
-        public GoogleSheetsService() throws IOException, GeneralSecurityException {
-            GoogleCredentials credentials = GoogleCredentials.fromStream(
-                    new ClassPathResource("credentials/credentials.json").getInputStream()
-            ).createScoped(List.of("https://www.googleapis.com/auth/spreadsheets"));
-            this.sheetsService = new Sheets.Builder(
-                    GoogleNetHttpTransport.newTrustedTransport(),
-                    JacksonFactory.getDefaultInstance(),
-                    new HttpCredentialsAdapter(credentials)
-            ).setApplicationName("AppTarefas").build();
-        }
+     public GoogleSheetsService() throws IOException, GeneralSecurityException {
+         GoogleCredentials credentials = GoogleCredentials.fromStream(
+                 new FileInputStream("/app/credentials.json")
+         ).createScoped(List.of("https://www.googleapis.com/auth/spreadsheets"));
 
-        public void adicionarTarefa(String descricao) throws IOException {
+         this.sheetsService = new Sheets.Builder(
+                 GoogleNetHttpTransport.newTrustedTransport(),
+                 JacksonFactory.getDefaultInstance(),
+                 new HttpCredentialsAdapter(credentials)
+         ).setApplicationName("AppTarefas").build();
+     }
+
+
+     public void adicionarTarefa(String descricao) throws IOException {
             String dataAtual = LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
             String HoraAtual = LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm"));
 
