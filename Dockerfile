@@ -1,19 +1,27 @@
-FROM openjdk:17-jdk-slim
+# Etapa 1: Compilar o projeto
+FROM maven:3.9.6-eclipse-temurin-17 AS build
 
-# Diretório onde a aplicação vai rodar
 WORKDIR /app
 
-# Copia o JAR do projeto para o container
-COPY backend/demo/target/demo-0.0.1-SNAPSHOT.jar app.jar
+# Copia tudo para dentro do container
+COPY . .
 
-# Copia um script que vamos criar para lidar com o credentials.json
-COPY ../start.sh .
+# Roda o build
+RUN mvn clean package -DskipTests
 
-# Dá permissão de execução ao script
+# Etapa 2: Rodar a aplicação
+FROM openjdk:17-jdk-slim
+
+WORKDIR /app
+
+# Copia o .jar gerado da etapa anterior
+COPY --from=build /app/backend/demo/target/demo-0.0.1-SNAPSHOT.jar app.jar
+
+# Copia o start.sh
+COPY start.sh .
+
 RUN chmod +x start.sh
 
-# Porta usada pela API
 EXPOSE 8080
 
-# Comando de entrada
 ENTRYPOINT ["./start.sh"]
