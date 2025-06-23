@@ -1,4 +1,7 @@
-D:\appTask\backend\demo\src\main\java\com\api\demo\controller\TarefaController.java
-D:\appTask\backend\demo\src\main\java\com\api\demo\DemoApplication.java
-D:\appTask\backend\demo\src\main\java\com\api\demo\model\TarefaDTO.java
-D:\appTask\backend\demo\src\main\java\com\api\demo\service\GoogleSheetsService.java
+E:\appTask\backend\demo\src\main\java\com\api\demo\config\WebConfig.java
+E:\appTask\backend\demo\src\main\java\com\api\demo\controller\CorsConfig.java
+E:\appTask\backend\demo\src\main\java\com\api\demo\controller\TarefaController.java
+E:\appTask\backend\demo\src\main\java\com\api\demo\DemoApplication.java
+E:\appTask\backend\demo\src\main\java\com\api\demo\model\TarefaDTO.java
+E:\appTask\backend\demo\src\main\java\com\api\demo\service\GoogleSheetsService.java
+E:\appTask\backend\demo\src\main\java\com\api\demo\service\TesteCredenciais.java

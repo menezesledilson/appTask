@@ -23,20 +23,18 @@ import java.util.List;
         private static final String SPREADSHEET_ID = "1yaEs2P6H4Qik0wiEjF-M_v5EAnbrG7qe6wjsiuRBcfQ"; // <- coloque aqui
         private static final String RANGE = "A:C";
 
-     public GoogleSheetsService() throws IOException, GeneralSecurityException {
-         GoogleCredentials credentials = GoogleCredentials.fromStream(
-                 new FileInputStream("/app/credentials.json")
-         ).createScoped(List.of("https://www.googleapis.com/auth/spreadsheets"));
+        public GoogleSheetsService() throws IOException, GeneralSecurityException {
+            GoogleCredentials credentials = GoogleCredentials.fromStream(
+                    new ClassPathResource("credentials/credentials.json").getInputStream()
+            ).createScoped(List.of("https://www.googleapis.com/auth/spreadsheets"));
+            this.sheetsService = new Sheets.Builder(
+                    GoogleNetHttpTransport.newTrustedTransport(),
+                    JacksonFactory.getDefaultInstance(),
+                    new HttpCredentialsAdapter(credentials)
+            ).setApplicationName("AppTarefas").build();
+        }
 
-         this.sheetsService = new Sheets.Builder(
-                 GoogleNetHttpTransport.newTrustedTransport(),
-                 JacksonFactory.getDefaultInstance(),
-                 new HttpCredentialsAdapter(credentials)
-         ).setApplicationName("AppTarefas").build();
-     }
-
-
-     public void adicionarTarefa(String descricao) throws IOException {
+        public void adicionarTarefa(String descricao) throws IOException {
             String dataAtual = LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
             String HoraAtual = LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm"));
 
@@ -76,6 +74,25 @@ import java.util.List;
                  tarefas.add(tarefa);
              }
          }
+         // Ordenar decrescentemente por data e hora
+         DateTimeFormatter dataFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+         DateTimeFormatter horaFormatter = DateTimeFormatter.ofPattern("HH:mm");
+
+         tarefas.sort((t1, t2) -> {
+             LocalDate d1 = LocalDate.parse(t1.getData(), dataFormatter);
+             LocalDate d2 = LocalDate.parse(t2.getData(), dataFormatter);
+
+             // Compara data decrescente
+             int cmpData = d2.compareTo(d1);
+             if (cmpData != 0) {
+                 return cmpData;
+             }
+
+             // Se datas iguais, compara hora decrescente
+             LocalTime h1 = LocalTime.parse(t1.getHora(), horaFormatter);
+             LocalTime h2 = LocalTime.parse(t2.getHora(), horaFormatter);
+             return h2.compareTo(h1);
+         });
 
          return tarefas;
      }
