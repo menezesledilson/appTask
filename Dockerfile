@@ -6,8 +6,8 @@ WORKDIR /app
 # Copia tudo para dentro do container
 COPY . .
 
-# Roda o build
-RUN mvn clean package -DskipTests
+# Rodar o build usando o pom.xml na pasta backend/demo
+RUN mvn -f backend/demo/pom.xml clean package -DskipTests
 
 # Etapa 2: Rodar a aplicação
 FROM openjdk:17-jdk-slim
