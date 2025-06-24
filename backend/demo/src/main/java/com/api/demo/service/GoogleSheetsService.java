@@ -8,31 +8,41 @@ import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
+
+import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
- @Service
- public class GoogleSheetsService {
+@Service
+public class GoogleSheetsService {
 
-        private final Sheets sheetsService;
-        private static final String SPREADSHEET_ID = "1yaEs2P6H4Qik0wiEjF-M_v5EAnbrG7qe6wjsiuRBcfQ"; // <- coloque aqui
-        private static final String RANGE = "A:C";
+    private final Sheets sheetsService;
+    private static final String SPREADSHEET_ID = "1yaEs2P6H4Qik0wiEjF-M_v5EAnbrG7qe6wjsiuRBcfQ";
+    private static final String RANGE = "A:C";
 
-        public GoogleSheetsService() throws IOException, GeneralSecurityException {
-            GoogleCredentials credentials = GoogleCredentials.fromStream(
-                    new ClassPathResource("credentials/credentials.json").getInputStream()
-            ).createScoped(List.of("https://www.googleapis.com/auth/spreadsheets"));
-            this.sheetsService = new Sheets.Builder(
-                    GoogleNetHttpTransport.newTrustedTransport(),
-                    JacksonFactory.getDefaultInstance(),
-                    new HttpCredentialsAdapter(credentials)
-            ).setApplicationName("AppTarefas").build();
+    public GoogleSheetsService() throws IOException, GeneralSecurityException {
+        String credentialsJson = System.getenv("GOOGLE_CREDENTIALS");
+        if (credentialsJson == null || credentialsJson.isEmpty()) {
+            throw new RuntimeException("Variável de ambiente GOOGLE_CREDENTIALS não está definida");
         }
+
+        ByteArrayInputStream credentialsStream = new ByteArrayInputStream(credentialsJson.getBytes(StandardCharsets.UTF_8));
+
+        GoogleCredentials credentials = GoogleCredentials.fromStream(credentialsStream)
+                .createScoped(List.of("https://www.googleapis.com/auth/spreadsheets"));
+
+        this.sheetsService = new Sheets.Builder(
+                GoogleNetHttpTransport.newTrustedTransport(),
+                JacksonFactory.getDefaultInstance(),
+                new HttpCredentialsAdapter(credentials)
+        ).setApplicationName("AppTarefas").build();
+    }
 
         public void adicionarTarefa(String descricao) throws IOException {
             String dataAtual = LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
